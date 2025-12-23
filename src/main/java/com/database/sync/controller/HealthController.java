@@ -13,7 +13,7 @@ import java.util.Map;
 @RequestMapping("/api/health")
 public class HealthController {
 
-    @GetMapping("/check")
+    @GetMapping({"", "/", "/check"})
     public ResponseEntity<?> healthCheck() {
         Map<String, Object> result = new HashMap<>();
         Map<String, Boolean> databaseStatus = new HashMap<>();
