@@ -1,5 +1,6 @@
 package com.database.sync.controller;
 
+import com.database.sync.db.DatabaseOperationUtil;
 import com.database.sync.service.DataManagementService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ public class DataController {
     @GetMapping("/tables/{databaseId}")
     public ResponseEntity<?> getTables(@PathVariable String databaseId) {
         try {
-            List<String> tables = com.database.sync.db.DatabaseOperationUtil.getTableNames(databaseId);
+            List<String> tables = DatabaseOperationUtil.getTableNames(databaseId);
             return ResponseEntity.ok(Map.of(
                     "success", true,
                     "tables", tables
@@ -77,7 +78,10 @@ public class DataController {
     }
 
     @PostMapping("/table/{databaseId}/{tableName}")
-    public ResponseEntity<?> insertData(@PathVariable String databaseId, @PathVariable String tableName, @RequestBody Map<String, Object> data) {
+    public ResponseEntity<?> insertData(
+            @PathVariable String databaseId,
+            @PathVariable String tableName,
+            @RequestBody Map<String, Object> data) {
         try {
             boolean success = dataManagementService.insertData(databaseId, tableName, data);
             if (success) {
@@ -108,7 +112,12 @@ public class DataController {
             @RequestParam String primaryKeyName,
             @RequestParam String primaryKeyValue) {
         try {
-            boolean success = dataManagementService.updateData(databaseId, tableName, data, primaryKeyName, primaryKeyValue);
+            boolean success = dataManagementService.updateData(
+                    databaseId,
+                    tableName,
+                    data,
+                    primaryKeyName,
+                    primaryKeyValue);
             if (success) {
                 return ResponseEntity.ok(Map.of(
                         "success", true,
