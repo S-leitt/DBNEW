@@ -4,12 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 public class DatabaseOperationUtil {
+
+    private static final Set<String> missingDataSourceLogged = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     public static List<Map<String, Object>> executeQuery(String databaseId, String sql, Object... params) {
         List<Map<String, Object>> result = new ArrayList<>();
@@ -127,7 +132,20 @@ public class DatabaseOperationUtil {
     }
 
     public static boolean testConnection(String databaseId) {
-        try (Connection conn = DatabaseConnectionFactory.getConnection(databaseId)) {
+        try (Connection conn = DatabaseConnectionFactory.getDataSource(databaseId) != null
+                ? DatabaseConnectionFactory.getConnection(databaseId)
+                : null) {
+            if (conn == null) {
+                if (missingDataSourceLogged.add(databaseId)) {
+                    String reason = DatabaseConnectionFactory.getInitializationError(databaseId);
+                    if (reason != null) {
+                        log.warn("Data source for database {} is unavailable: {}", databaseId, reason);
+                    } else {
+                        log.warn("No data source configured for database ID: {}", databaseId);
+                    }
+                }
+                return false;
+            }
             return conn != null && !conn.isClosed();
         } catch (SQLException e) {
             log.error("Connection test failed for database {}: {}", databaseId, e.getMessage());

@@ -14,6 +14,7 @@ import java.util.Map;
 public class DatabaseConnectionFactory {
 
     private static final Map<String, DataSource> dataSourceMap = new HashMap<>();
+    private static final Map<String, String> dataSourceInitErrors = new HashMap<>();
 
     static {
         initDataSource();
@@ -34,12 +35,13 @@ public class DatabaseConnectionFactory {
             mysqlConfig.setIdleTimeout(600000);
             mysqlConfig.setMaxLifetime(1800000);
             HikariDataSource mysqlDs = new HikariDataSource(mysqlConfig);
+            dataSourceMap.put("mysql", mysqlDs);
             // Test connection
             mysqlDs.getConnection().close();
-            dataSourceMap.put("mysql", mysqlDs);
             log.info("Successfully initialized MySQL data source");
         } catch (Exception e) {
             log.error("Failed to initialize MySQL data source: {}", e.getMessage(), e);
+            dataSourceInitErrors.put("mysql", e.getMessage());
         }
 
         // Oracle
@@ -56,12 +58,13 @@ public class DatabaseConnectionFactory {
             oracleConfig.setIdleTimeout(600000);
             oracleConfig.setMaxLifetime(1800000);
             HikariDataSource oracleDs = new HikariDataSource(oracleConfig);
+            dataSourceMap.put("oracle", oracleDs);
             // Test connection
             oracleDs.getConnection().close();
-            dataSourceMap.put("oracle", oracleDs);
             log.info("Successfully initialized Oracle data source");
         } catch (Exception e) {
             log.error("Failed to initialize Oracle data source: {}", e.getMessage(), e);
+            dataSourceInitErrors.put("oracle", e.getMessage());
         }
 
         // SQL Server
@@ -78,12 +81,13 @@ public class DatabaseConnectionFactory {
             sqlServerConfig.setIdleTimeout(600000);
             sqlServerConfig.setMaxLifetime(1800000);
             HikariDataSource sqlServerDs = new HikariDataSource(sqlServerConfig);
+            dataSourceMap.put("sqlserver", sqlServerDs);
             // Test connection
             sqlServerDs.getConnection().close();
-            dataSourceMap.put("sqlserver", sqlServerDs);
             log.info("Successfully initialized SQL Server data source");
         } catch (Exception e) {
             log.error("Failed to initialize SQL Server data source: {}", e.getMessage(), e);
+            dataSourceInitErrors.put("sqlserver", e.getMessage());
         }
     }
 
@@ -97,6 +101,10 @@ public class DatabaseConnectionFactory {
 
     public static DataSource getDataSource(String databaseId) {
         return dataSourceMap.get(databaseId);
+    }
+
+    public static String getInitializationError(String databaseId) {
+        return dataSourceInitErrors.get(databaseId);
     }
 
     public static void closeDataSource(String databaseId) {
