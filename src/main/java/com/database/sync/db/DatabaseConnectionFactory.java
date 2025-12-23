@@ -34,9 +34,9 @@ public class DatabaseConnectionFactory {
             mysqlConfig.setIdleTimeout(600000);
             mysqlConfig.setMaxLifetime(1800000);
             HikariDataSource mysqlDs = new HikariDataSource(mysqlConfig);
+            dataSourceMap.put("mysql", mysqlDs);
             // Test connection
             mysqlDs.getConnection().close();
-            dataSourceMap.put("mysql", mysqlDs);
             log.info("Successfully initialized MySQL data source");
         } catch (Exception e) {
             log.error("Failed to initialize MySQL data source: {}", e.getMessage(), e);
@@ -56,9 +56,9 @@ public class DatabaseConnectionFactory {
             oracleConfig.setIdleTimeout(600000);
             oracleConfig.setMaxLifetime(1800000);
             HikariDataSource oracleDs = new HikariDataSource(oracleConfig);
+            dataSourceMap.put("oracle", oracleDs);
             // Test connection
             oracleDs.getConnection().close();
-            dataSourceMap.put("oracle", oracleDs);
             log.info("Successfully initialized Oracle data source");
         } catch (Exception e) {
             log.error("Failed to initialize Oracle data source: {}", e.getMessage(), e);
@@ -78,9 +78,9 @@ public class DatabaseConnectionFactory {
             sqlServerConfig.setIdleTimeout(600000);
             sqlServerConfig.setMaxLifetime(1800000);
             HikariDataSource sqlServerDs = new HikariDataSource(sqlServerConfig);
+            dataSourceMap.put("sqlserver", sqlServerDs);
             // Test connection
             sqlServerDs.getConnection().close();
-            dataSourceMap.put("sqlserver", sqlServerDs);
             log.info("Successfully initialized SQL Server data source");
         } catch (Exception e) {
             log.error("Failed to initialize SQL Server data source: {}", e.getMessage(), e);

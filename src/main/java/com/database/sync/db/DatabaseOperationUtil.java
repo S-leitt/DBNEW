@@ -127,7 +127,13 @@ public class DatabaseOperationUtil {
     }
 
     public static boolean testConnection(String databaseId) {
-        try (Connection conn = DatabaseConnectionFactory.getConnection(databaseId)) {
+        try (Connection conn = DatabaseConnectionFactory.getDataSource(databaseId) != null
+                ? DatabaseConnectionFactory.getConnection(databaseId)
+                : null) {
+            if (conn == null) {
+                log.warn("No data source configured for database ID: {}", databaseId);
+                return false;
+            }
             return conn != null && !conn.isClosed();
         } catch (SQLException e) {
             log.error("Connection test failed for database {}: {}", databaseId, e.getMessage());
