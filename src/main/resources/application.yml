@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    mysql:
+      url: jdbc:mysql://localhost:3306/db_mysql?useSSL=false&serverTimezone=UTC
+      username: root
+      password: password
+      driver-class-name: com.mysql.cj.jdbc.Driver
+    sqlserver:
+      url: jdbc:sqlserver://localhost:1433;databaseName=db_sqlserver;encrypt=false
+      username: sa
+      password: password
+      driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    postgres:
+      url: jdbc:postgresql://localhost:5432/db_postgres
+      username: postgres
+      password: password
+      driver-class-name: org.postgresql.Driver
+
+mybatis:
+  mapper-locations: classpath*:mapper/*.xml
+  type-aliases-package: com.example.dbnew.entity
+
+logging:
+  level:
+    com.example.dbnew: DEBUG
